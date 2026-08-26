@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>구매 분석 대시보드 — 톤급·모델별 협력업체 비중</title>
+<link rel="stylesheet" href="css/style.css">
+<!-- 공통 디자인 시스템. 반드시 기존 CSS 뒤에 온다 —
+     특정도가 같으면 나중에 온 쪽이 이기므로 순서가 곧 우선순위다. -->
+<link rel="stylesheet" href="css/hd-theme.css">
+<script src="lib/xlsx.full.min.js"></script>
+<script src="lib/chart.umd.min.js"></script>
+<!-- === HD:META:BEGIN (자동 생성 — scripts 로 다시 굽습니다) === -->
+<link rel="icon" href="https://aebonlee.github.io/hd-project01/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="https://aebonlee.github.io/hd-project01/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="https://aebonlee.github.io/hd-project01/apple-touch-icon.png">
+<link rel="canonical" href="https://aebonlee.github.io/hd-project01/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HD 생성형 AI 업무자동화 전문가과정">
+<meta property="og:url" content="https://aebonlee.github.io/hd-project01/">
+<meta property="og:title" content="구매 분석 대시보드 — HD 생성형 AI 업무자동화 전문가과정">
+<meta property="og:description" content="구매 실적과 장비 모델을 품번으로 이어 붙여 톤급 → 모델 → 품번 → 협력업체 순서로 파고드는 대시보드.">
+<meta property="og:image" content="https://aebonlee.github.io/hd-project01/og-index.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="구매 분석 대시보드 — HD 생성형 AI 업무자동화 전문가과정">
+<meta name="twitter:description" content="구매 실적과 장비 모델을 품번으로 이어 붙여 톤급 → 모델 → 품번 → 협력업체 순서로 파고드는 대시보드.">
+<meta name="twitter:image" content="https://aebonlee.github.io/hd-project01/og-index.png">
+<!-- === HD:META:END === -->
+</head>
+<body class="hd hd-app">
+
+<header class="app">
+  <h1>구매 분석 대시보드</h1>
+  <span class="sub">빅데이터 기반 장비 모델별 구매 품목·협력업체 분석 — 톤급 → 모델 → 품번 → 업체 드릴다운</span>
+</header>
+
+<main>
+  <!-- 1. 데이터 입력 -->
+  <section class="card" id="upload-card">
+    <h2>데이터 불러오기 <span class="hint">엑셀 2개(구매 데이터·모델 데이터)를 올리거나, 샘플 데이터로 바로 시작</span></h2>
+    <div class="upload-grid">
+      <div>
+        <label>① 구매 데이터 (품번·업체명·연간 구매 물량·연간 구매 금액)</label>
+        <input type="file" id="file-purchase" accept=".xlsx,.xls,.csv">
+        <div id="purchase-status"></div>
+      </div>
+      <div>
+        <label>② 장비 모델 데이터 (품번·장비 모델명·톤급 코드)</label>
+        <input type="file" id="file-model" accept=".xlsx,.xls,.csv">
+        <div id="model-status"></div>
+      </div>
+      <div>
+        <button class="primary" id="btn-sample">샘플 데이터 불러오기</button>
+      </div>
+    </div>
+    <p class="muted" style="margin:10px 0 0">컬럼명은 자동 인식됩니다(품번/업체명/물량/금액/모델명/톤급 코드 계열 명칭 지원). 톤급 코드 규칙: 2X→2톤급 … 8X→8톤급, 100→10톤급 … 180→18톤급.</p>
+  </section>
+
+  <div id="empty-state">데이터를 불러오면 분석 결과가 표시됩니다.</div>
+
+  <div id="dash" style="display:none">
+    <!-- 2. KPI -->
+    <section class="kpis" id="kpi-row"></section>
+
+    <!-- 3. 필터 -->
+    <section class="card">
+      <div class="filters">
+        <div class="f"><label>톤급</label><select id="f-ton"><option value="">전체</option></select></div>
+        <div class="f"><label>장비 모델</label><select id="f-model"><option value="">전체</option></select></div>
+        <div class="f"><label>협력업체</label><select id="f-vendor"><option value="">전체</option></select></div>
+        <div class="f" style="min-width:120px"><label>집중도 경고 기준(%)</label><input type="number" id="f-threshold" value="50" min="1" max="100" step="5"></div>
+        <div class="f" style="min-width:0"><label>집계 기준</label>
+          <div class="basis-toggle">
+            <button id="basis-amt" class="on">금액</button><button id="basis-qty">물량</button>
+          </div>
+        </div>
+        <div class="f" style="min-width:0"><label>&nbsp;</label><button id="btn-reset">필터 초기화</button></div>
+      </div>
+    </section>
+
+    <!-- 4. 차트 -->
+    <section class="charts">
+      <div class="card">
+        <h2 id="ton-chart-title">톤급별 구매 금액</h2>
+        <div class="chart-box"><canvas id="chart-ton"></canvas></div>
+        <p class="chart-note">막대를 클릭하면 해당 톤급으로 필터링됩니다.</p>
+      </div>
+      <div class="card">
+        <h2 id="vendor-chart-title">업체별 구매 비중 — 전체</h2>
+        <div class="chart-box"><canvas id="chart-vendor"></canvas></div>
+        <p class="chart-note" id="vendor-chart-note"></p>
+      </div>
+    </section>
+
+    <!-- 5. 드릴다운 -->
+    <section class="card">
+      <h2>드릴다운: 톤급 → 장비 모델 → 품번 → 협력업체
+        <span class="hint">비중 막대는 업체별 점유(선택한 집계 기준). <span class="badge">집중</span> = 1위 업체 비중이 경고 기준 이상</span></h2>
+      <div class="tree" id="tree"></div>
+      <p class="muted" id="dup-note" style="margin-top:10px"></p>
+    </section>
+
+    <!-- 6. 집중도 -->
+    <section class="card">
+      <h2>업체 집중도 상위 항목 <span class="hint" id="conc-hint"></span></h2>
+      <table class="flat" id="conc-table">
+        <thead><tr><th>구분</th><th>경로</th><th>1위 업체</th><th class="num">비중</th><th class="num">구매 금액</th><th class="num">구매 물량</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- 7. 내보내기 -->
+    <section class="card">
+      <div class="toolbar" style="justify-content:flex-start">
+        <button class="primary" id="btn-print">요약 보고서 인쇄 / PDF 저장</button>
+        <button id="btn-export">분석 결과 엑셀 내보내기</button>
+      </div>
+      <p class="muted">보고서에는 톤급별 구매 규모, 모델별 업체 공급 비중, 업체 집중도 상위 항목이 포함됩니다. PDF 저장은 브라우저 인쇄 대화상자에서 "PDF로 저장"을 선택하세요.</p>
+    </section>
+  </div>
+</main>
+
+<!-- 인쇄 전용 보고서 영역 -->
+<div id="report"></div>
+
+<script src="js/sample-data.js"></script>
+<script src="js/analysis.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
