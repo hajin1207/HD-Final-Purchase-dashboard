@@ -1,0 +1,904 @@
+/* ============================================================================
+ * hd-theme.css — HD 프로젝트 공통 디자인 시스템
+ *
+ * 각 프로젝트의 기존 CSS **뒤에** 불러옵니다. CSS 는 특정도가 같으면
+ * 나중에 온 쪽이 이기므로, 순서가 곧 우선순위입니다.
+ * 앞으로 옮기면 기존 스타일이 되살아나 이 파일이 무력해집니다.
+ *
+ * 방침
+ *  - 클래스 이름을 새로 요구하지 않는다. 프로젝트마다 마크업이 달라서,
+ *    요소 선택자(table, button, input …)와 이미 쓰이고 있는 이름
+ *    (.card .panel .btn .table .badge .tab .toolbar …)에만 붙는다.
+ *  - 색은 토큰 하나만 바꾸면 프로젝트 색이 바뀐다 (--accent).
+ *  - 라이트/다크 둘 다 본다.
+ * ========================================================================== */
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css');
+
+/* ---------------------------------------------------------------- 토큰 --- */
+:root {
+  /* 면 */
+  --hd-bg:        #f5f7fa;
+  --hd-surface:   #ffffff;
+  --hd-surface-2: #f8fafc;
+  --hd-line:      #d5dde7;   /* 영역 경계가 보이도록 한 단계 진하게 */
+  --hd-line-soft: #e8edf3;
+
+  /* 글자 */
+  --hd-ink:    #0f172a;
+  --hd-ink-2:  #475569;
+  /* #94a3b8 은 흰 바탕에서 2.56:1 로 본문 기준(4.5)에 못 미쳤다.
+     지표 카드 라벨·보조 설명에 쓰이는 색이라 실제로 읽기 어려웠다. */
+  --hd-ink-3:  #64748b;   /* 4.76:1 */
+
+  /* 강조 — 프로젝트마다 이 두 줄만 바꾸면 색이 바뀐다 */
+  /* hd-project01 */
+  --accent:      #3b4ea8;
+  --accent-deep: #2c3b80;
+  --accent-soft: #eaecf7;
+  --on-accent:   #ffffff;
+
+  /* 상태 */
+  --hd-ok:        #0a6045;   --hd-ok-soft:   #e3f4ec;   /* 짙게 */
+  --hd-warn:      #9a6400;   --hd-warn-soft: #fdf4e3;
+  --hd-bad:       #c8341f;   --hd-bad-soft:  #fdeae7;   /* 밝게 — 성공과 명도를 벌린다 */
+  --hd-info:      #1d4ed8;   --hd-info-soft: #e8eefc;
+
+  /* 형태 */
+  --hd-r-sm: 6px;
+  --hd-r:    10px;
+  --hd-r-lg: 14px;
+  --hd-shadow:    0 1px 2px rgba(15, 23, 42, .04), 0 1px 3px rgba(15, 23, 42, .06);
+  --hd-shadow-lg: 0 4px 6px -2px rgba(15, 23, 42, .05), 0 12px 24px -6px rgba(15, 23, 42, .10);
+
+  /* 폭 (§9.1) */
+  --container-wide:  1280px;
+  --container-read:  1100px;
+  --container-prose:  860px;
+  --container-pad:     20px;
+
+  /* 세로 리듬 — 간격을 다섯 단계로만 쓴다.
+     요소마다 제각각 정하면(12.6 · 14 · 15 · 20px …) 규칙이 없어 보이고,
+     새 요소를 넣을 때마다 눈대중으로 또 다른 값이 생긴다. */
+  --sp-1: 8px;    /* 목록 항목 사이 */
+  --sp-2: 14px;   /* 문단 사이 */
+  --sp-3: 22px;   /* 표·코드·안내 띠 위아래 */
+  --sp-4: 34px;   /* 소제목 위 */
+  --sp-5: 48px;   /* 큰 단락 사이 */
+
+  /* 한국어 줄간격.
+     한글은 받침 때문에 글자 높이가 커서 라틴 문자와 같은 값이면 답답하다.
+     본문 1.8, 제목은 줄이 길지 않으므로 1.35. */
+  --lh-body:  1.8;
+  --lh-tight: 1.35;
+
+  --hd-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+             "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+  --hd-mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+             "D2Coding", monospace;
+}
+
+@media (min-width: 640px)  { :root { --container-pad: 28px; } }
+@media (min-width: 1024px) { :root { --container-pad: 40px; } }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --hd-bg:        #0b1220;
+    --hd-surface:   #121a2a;
+    --hd-surface-2: #162033;
+    --hd-line:      #24304a;
+    --hd-line-soft: #1b2436;
+    --hd-ink:       #e8eef7;
+    --hd-ink-2:     #a9b6c9;
+    --hd-ink-3:     #8d9cb3;   /* 어두운 바탕에서는 밝혀야 4.5:1 이 된다 */
+    --accent:       #3aa8d8;
+    --accent-deep:  #6cc4e8;
+    --accent-soft:  #14293a;
+    --on-accent:    #06121b;
+    --hd-ok-soft:   #10281d;
+    --hd-warn-soft: #2a2110;
+    --hd-bad-soft:  #2c1512;
+    --hd-info-soft: #131e3b;
+    --hd-shadow:    0 1px 2px rgba(0, 0, 0, .35);
+    --hd-shadow-lg: 0 12px 28px -8px rgba(0, 0, 0, .55);
+  }
+}
+:root[data-theme="dark"] {
+  --hd-bg: #0b1220; --hd-surface: #121a2a; --hd-surface-2: #162033;
+  --hd-line: #24304a; --hd-line-soft: #1b2436;
+  --hd-ink: #e8eef7; --hd-ink-2: #a9b6c9; --hd-ink-3: #6b7b93;
+  --accent: #3aa8d8; --accent-deep: #6cc4e8; --accent-soft: #14293a; --on-accent: #06121b;
+  --hd-ok-soft: #10281d; --hd-warn-soft: #2a2110; --hd-bad-soft: #2c1512; --hd-info-soft: #131e3b;
+  --hd-shadow: 0 1px 2px rgba(0,0,0,.35);
+  --hd-shadow-lg: 0 12px 28px -8px rgba(0,0,0,.55);
+}
+
+/* ---------------------------------------------------------------- 바탕 --- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body.hd.hd-app {
+  margin: 0;
+  background: var(--hd-bg);
+  color: var(--hd-ink);
+  font-family: var(--hd-sans);
+  font-size: 15px;
+  line-height: var(--lh-body);
+  letter-spacing: -0.003em;
+  -webkit-font-smoothing: antialiased;
+  /* 한국어 워드랩 표준 — break-word 단독은 어절 중간이 끊긴다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* 가로 스크롤은 표·코드 같은 제 컨테이너 안에서만 (§9) */
+html, body.hd.hd-app { overflow-x: hidden; }
+
+::selection { background: var(--accent); color: var(--on-accent); }
+
+/* ⚠ 링크 색은 **클래스가 없는 순수 링크**에만 준다.
+   `a` 전체에 주면, 프로젝트가 색을 칠해 둔 항목까지 덮는다.
+   실제로 hd-project05 의 선택된 메뉴(`.nav-item.active`)는 짙은 남색 면에
+   흰 글자로 지정돼 있었는데, 여기에 강조색을 얹어 대비 1.56 이 되어
+   글자가 배경에 묻혔다. 특정도가 같으면 나중에 온 쪽이 이기기 때문이다.
+   네비·버튼 역할을 하는 링크는 대부분 클래스를 갖고 있으므로 이 조건으로 갈린다. */
+.hd.hd-app a:not([class]) {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  text-underline-offset: 3px;
+}
+.hd.hd-app a:not([class]):hover { text-decoration-color: currentColor; }
+
+.hd.hd-app :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--hd-ink);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0 0 .5em;
+}
+.hd.hd-app :where(h1) { font-size: clamp(22px, 1.2vw + 18px, 28px); }
+.hd.hd-app :where(h2) { font-size: clamp(18px, .6vw + 16px, 21px); }
+.hd.hd-app :where(h3) { font-size: 16px; }
+.hd.hd-app :where(h4) { font-size: 14px; color: var(--hd-ink-2); }
+
+.hd.hd-app :where(p) { margin: 0 0 .9em; }
+.hd.hd-app :where(hr) { border: 0; border-top: 1px solid var(--hd-line); margin: 24px 0; }
+
+.hd.hd-app :where(code, kbd, samp) {
+  font-family: var(--hd-mono);
+  font-size: .88em;
+  background: var(--hd-surface-2);
+  border: 1px solid var(--hd-line-soft);
+  border-radius: 5px;
+  padding: .1em .4em;
+}
+.hd.hd-app :where(pre) {
+  font-family: var(--hd-mono);
+  background: var(--hd-surface-2);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-r);
+  padding: 14px 16px;
+  overflow-x: auto;           /* 가로 스크롤은 여기서만 */
+  line-height: 1.6;
+}
+.hd.hd-app :where(pre) code { background: none; border: 0; padding: 0; }
+
+/* ------------------------------------------------------------ 앱 골격 --- */
+
+/* ⚠ 페이지 최상단 헤더(body 의 직계 자식)만 칠한다.
+   `.topbar` 만 보고 칠하면 안 된다 — 어떤 프로젝트는 본문 안쪽 제목 줄에도
+   같은 이름을 쓴다(hd-project09). 거기까지 칠하면 그 프로젝트가 정해 둔
+   짙은 제목 색이 그대로 남아 배경과 같은 계열이 되고 글자가 사라진다. */
+body.hd.hd-app > header {
+  background: linear-gradient(180deg, var(--accent-deep), var(--accent));
+  color: var(--on-accent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-deep) 70%, #000);
+  box-shadow: var(--hd-shadow);
+  padding: 14px 0;
+}
+/* 헤더 안쪽 정렬선을 본문과 맞춘다.
+   안에 폭 제한 래퍼(.inner/.wrap/.topbar-inner)가 있는 헤더는 그 래퍼가 이미
+   가운데로 모으므로 건드리지 않는다. 래퍼 없이 h1 이 바로 들어 있는 헤더만
+   본문과 같은 지점에서 시작하게 한다 — 안 그러면 제목은 화면 끝에 붙고
+   본문 카드만 안쪽에 있어 좌측 선이 두 개로 보인다. */
+body.hd.hd-app > header:not(:has(> .inner)):not(:has(> .wrap)):not(:has(> .topbar-inner)) {
+  padding-left: max(var(--container-pad), calc((100% - var(--container-wide)) / 2));
+  padding-right: max(var(--container-pad), calc((100% - var(--container-wide)) / 2));
+}
+
+/* 헤더 안 글자는 전부 밝게.
+   프로젝트마다 부제에 `.sub` `.subtitle` `.muted` `small` 을 제각각 쓰는데,
+   그 색이 어두운 회색으로 남아 그라디언트에 묻히는 것이 가장 흔한 가독성 사고였다.
+   특정도를 넉넉히 올려 확실히 이기게 한다. */
+body.hd.hd-app > header h1,
+body.hd.hd-app > header h2,
+body.hd.hd-app > header h3,
+body.hd.hd-app > header .brand-text,
+body.hd.hd-app > header a { color: #fff; }
+
+body.hd.hd-app > header p,
+body.hd.hd-app > header small,
+body.hd.hd-app > header span,
+body.hd.hd-app > header label,
+body.hd.hd-app > header .sub,
+body.hd.hd-app > header .subtitle,
+body.hd.hd-app > header .muted,
+body.hd.hd-app > header .hint,
+body.hd.hd-app > header .note,
+body.hd.hd-app > header .data-status,
+body.hd.hd-app > header .desc {
+  /* 흰색보다 살짝 낮춰 제목과 층을 만든다. 이 값에서도 대비는 넉넉하다. */
+  color: rgba(255, 255, 255, .82);
+}
+
+/* 헤더 안 버튼·입력은 배경이 어두우므로 따로 잡는다 */
+body.hd.hd-app > header .btn,
+body.hd.hd-app > header button {
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .32);
+  color: #fff;
+}
+body.hd.hd-app > header .btn:hover,
+body.hd.hd-app > header button:hover {
+  background: rgba(255, 255, 255, .22);
+  border-color: #fff;
+}
+body.hd.hd-app > header .btn.active,
+body.hd.hd-app > header button.active,
+body.hd.hd-app > header .btn-primary,
+body.hd.hd-app > header .btn.primary {
+  background: #fff;
+  border-color: #fff;
+  color: var(--accent-deep);
+  font-weight: 700;
+}
+body.hd.hd-app > header select,
+body.hd.hd-app > header input {
+  background: rgba(255, 255, 255, .95);
+  border-color: rgba(255, 255, 255, .5);
+  color: var(--hd-ink);
+}
+
+.hd.hd-app .brand-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 800; letter-spacing: .02em;
+  background: rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, .22);
+  color: #fff;
+  padding: 4px 11px;
+  border-radius: var(--hd-r-sm);
+  backdrop-filter: saturate(140%) blur(2px);
+}
+
+/* 폭 제한 — 배경은 전면, 내용만 가운데 (§9.1) */
+/* ⚠ `.layout` `.page` `.container` `main.main` 같은 범용 이름에는 폭을 걸지 않는다.
+   사이드바 레이아웃이 그 이름을 쓰는 프로젝트가 있고(hd-project05·09),
+   거기에 `margin: auto` 를 걸면 본문이 사이드바 밑으로 들어가 글자가 잘린다.
+   실제로 05 를 그렇게 깨뜨렸다. 폭은 `.inner` 와 04 의 `.wrap` 에만 건다. */
+.hd.hd-app .inner,
+body.hd.hd-app > header.site-header > .wrap,
+body.hd.hd-app > main.wrap {
+  max-width: calc(var(--container-wide) + 2 * var(--container-pad));
+  padding-left: var(--container-pad);
+  padding-right: var(--container-pad);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 페이지 머리 */
+.hd.hd-app .page-head {
+  display: flex; flex-wrap: wrap; gap: 12px 20px;
+  align-items: flex-start; justify-content: space-between;
+  padding: 26px 0 18px;
+}
+.hd.hd-app .page-head h1 { margin: 0 0 4px; }
+.hd.hd-app .page-head .muted, .hd.hd-app .page-head .sub, .hd.hd-app .page-head .subtitle { margin: 0; }
+
+/* ----------------------------------------------------------- 컨테이너 --- */
+
+.hd.hd-app .card, .hd.hd-app .panel, .hd.hd-app .box, .hd.hd-app .section-card, .hd.hd-app .chart-box {
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-r-lg);
+  box-shadow: var(--hd-shadow);
+  padding: 20px 22px;
+}
+.hd.hd-app .card + .card, .hd.hd-app .panel + .panel { margin-top: 18px; }
+
+.hd.hd-app .card > :first-child, .hd.hd-app .panel > :first-child { margin-top: 0; }
+.hd.hd-app .card > :last-child, .hd.hd-app .panel > :last-child { margin-bottom: 0; }
+
+/* 카드 제목에 얇은 강조선 — 밋밋함을 없애는 가장 값싼 장치 */
+.hd.hd-app .card > h2, .hd.hd-app .panel > h2, .hd.hd-app .card > h3, .hd.hd-app .panel > h3 {
+  position: relative;
+  padding-left: 12px;
+}
+.hd.hd-app .card > h2::before, .hd.hd-app .panel > h2::before, .hd.hd-app .card > h3::before, .hd.hd-app .panel > h3::before {
+  content: "";
+  position: absolute; left: 0; top: .22em; bottom: .22em;
+  width: 3px; border-radius: 2px;
+  background: var(--accent);
+}
+
+/* 격자 — minmax(0,1fr) 로 내용이 커도 칸이 삐져나오지 않게 (§9.7) */
+/* 지표 한 줄 — 숫자만 들어가므로 좁아도 된다.
+   195px 이면 1280px 폭에 여섯 칸이 들어간다. 230px 이면 다섯 칸에서 끊겨
+   마지막 한 칸이 다음 줄에 혼자 남는다(사업장 6곳에서 실제로 그랬다). */
+.hd.hd-app .kpi-grid, .hd.hd-app .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(195px, 100%), 1fr));
+  gap: 14px;
+}
+
+/* 내용이 든 카드 묶음 — 제목·설명·태그·버튼이 들어가므로 넓어야 읽힌다.
+   지표 카드와 같은 값(195px)을 쓰면 글이 든 카드가 잘게 쪼개져 읽을 수 없다. */
+.hd.hd-app .grid, .hd.hd-app .cards, .hd.hd-app .card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px;
+}
+
+/* 지표 카드 */
+.hd.hd-app .stat, .hd.hd-app .stat-card, .hd.hd-app .kpi, .hd.hd-app .kpi-card {
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-r);
+  padding: 15px 17px;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.hd.hd-app .stat::after, .hd.hd-app .stat-card::after, .hd.hd-app .kpi::after, .hd.hd-app .kpi-card::after {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+  background: var(--accent); opacity: .85;
+}
+.hd.hd-app .stat:hover, .hd.hd-app .stat-card:hover, .hd.hd-app .kpi:hover { border-color: var(--accent); }
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .stat-label, .hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .k, .hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .label {
+  font-size: 12px; color: var(--hd-ink-3); font-weight: 600;
+  letter-spacing: .01em; text-transform: none;
+}
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .stat-value, .hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .v, .hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .value {
+  font-size: 24px; font-weight: 750; line-height: 1.25;
+  color: var(--hd-ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------------ 표 --- */
+
+.hd.hd-app .table-wrap, .hd.hd-app .tablewrap, .hd.hd-app .table-scroll {
+  overflow-x: auto;                      /* 가로 스크롤은 표 안에서만 */
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-r);
+  background: var(--hd-surface);
+}
+.hd.hd-app .card .table-wrap, .hd.hd-app .panel .table-wrap, .hd.hd-app .card .tablewrap, .hd.hd-app .panel .tablewrap { box-shadow: none; }
+
+.hd.hd-app table, .hd.hd-app .table, .hd.hd-app .tbl {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 13.5px;
+}
+.hd.hd-app table th, .hd.hd-app .table th, .hd.hd-app .tbl th {
+  background: var(--hd-surface-2);
+  color: var(--hd-ink-2);
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: .01em;
+  text-align: left;
+  white-space: nowrap;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--hd-line);
+  position: sticky; top: 0; z-index: 1;
+}
+.hd.hd-app table td, .hd.hd-app .table td, .hd.hd-app .tbl td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--hd-line-soft);
+  vertical-align: top;
+}
+.hd.hd-app table tbody tr:last-child td, .hd.hd-app .table tbody tr:last-child td, .hd.hd-app .tbl tbody tr:last-child td { border-bottom: 0; }
+.hd.hd-app table tbody tr:hover td, .hd.hd-app .table tbody tr:hover td, .hd.hd-app .tbl tbody tr:hover td { background: var(--hd-surface-2); }
+.hd.hd-app table td.num, .hd.hd-app table th.num, .hd.hd-app .table td.num, .hd.hd-app .table th.num, .hd.hd-app .tbl td.num, .hd.hd-app .tbl th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.hd.hd-app table .mono, .hd.hd-app .table .mono, .hd.hd-app .tbl .mono, .hd.hd-app .mono { font-family: var(--hd-mono); font-size: .95em; }
+
+/* ---------------------------------------------------------------- 버튼 --- */
+
+.hd.hd-app .btn, .hd.hd-app button.btn, .hd.hd-app a.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: inherit; font-size: 14px; font-weight: 600;
+  line-height: 1.2;
+  padding: 9px 15px;
+  border-radius: var(--hd-r-sm);
+  border: 1px solid var(--hd-line);
+  background: var(--hd-surface);
+  color: var(--hd-ink);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+.hd.hd-app .btn:hover { border-color: var(--hd-ink-3); background: var(--hd-surface-2); }
+.hd.hd-app .btn:active { transform: translateY(1px); }
+.hd.hd-app .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.hd.hd-app .btn-primary, .hd.hd-app .btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  box-shadow: var(--hd-shadow);
+}
+.hd.hd-app .btn-primary:hover, .hd.hd-app .btn.primary:hover {
+  background: var(--accent-deep); border-color: var(--accent-deep); color: var(--on-accent);
+}
+
+.hd.hd-app .btn-secondary, .hd.hd-app .btn.secondary {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--accent-deep);
+}
+.hd.hd-app .btn-secondary:hover, .hd.hd-app .btn.secondary:hover {
+  border-color: var(--accent); background: var(--accent-soft);
+}
+
+.hd.hd-app .btn-ghost, .hd.hd-app .btn.ghost { background: transparent; }
+.hd.hd-app .btn-ghost:hover, .hd.hd-app .btn.ghost:hover { background: var(--hd-surface-2); }
+
+.hd.hd-app .btn-danger, .hd.hd-app .btn.danger {
+  background: var(--hd-bad); border-color: var(--hd-bad); color: #fff;
+}
+.hd.hd-app .btn-danger:hover { background: #93130b; border-color: #93130b; }
+
+.hd.hd-app .btn-sm, .hd.hd-app .btn.small { font-size: 13px; padding: 6px 11px; }
+.hd.hd-app .btn:disabled, .hd.hd-app .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.hd.hd-app .topbar .btn-ghost, .hd.hd-app .topbar .btn.ghost {
+  border-color: rgba(255,255,255,.35); color: #fff; background: rgba(255,255,255,.08);
+}
+.hd.hd-app .topbar .btn-ghost:hover { background: rgba(255,255,255,.18); border-color: #fff; }
+
+.hd.hd-app .btn-group, .hd.hd-app .toolbar, .hd.hd-app .actions {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+
+/* ---------------------------------------------------------------- 입력 --- */
+
+.hd.hd-app input, .hd.hd-app select, .hd.hd-app textarea {
+  font: inherit;
+  font-size: 14px;
+  color: var(--hd-ink);
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-r-sm);
+  padding: 8px 11px;
+  max-width: 100%;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.hd.hd-app input:focus, .hd.hd-app select:focus, .hd.hd-app textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.hd.hd-app input[type="checkbox"], .hd.hd-app input[type="radio"] { accent-color: var(--accent); }
+.hd.hd-app input::placeholder, .hd.hd-app textarea::placeholder { color: var(--hd-ink-3); }
+.hd.hd-app label { font-size: 13px; color: var(--hd-ink-2); font-weight: 600; }
+
+.hd.hd-app .form-row, .hd.hd-app .field-row {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+  margin: 12px 0;
+}
+.hd.hd-app .form-row label, .hd.hd-app .field-row label {
+  display: flex; flex-direction: column; gap: 5px;
+}
+
+/* ------------------------------------------------------------------ 탭 --- */
+
+.hd.hd-app .tab-bar, .hd.hd-app .tabs, .hd.hd-app .tabs-inner {
+  display: flex; gap: 2px;
+  border-bottom: 1px solid var(--hd-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.hd.hd-app .tab-bar::-webkit-scrollbar, .hd.hd-app .tabs::-webkit-scrollbar { display: none; }
+
+.hd.hd-app .tab {
+  font: inherit; font-size: 14px; font-weight: 600;
+  color: var(--hd-ink-2);
+  background: none; border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 12px 14px;
+  cursor: pointer; white-space: nowrap;
+  transition: color .15s ease, border-color .15s ease;
+}
+.hd.hd-app .tab:hover { color: var(--hd-ink); }
+.hd.hd-app .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ------------------------------------------------------------ 상태 표시 --- */
+
+.hd.hd-app .badge, .hd.hd-app .tag, .hd.hd-app .pill, .hd.hd-app .chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 700; line-height: 1.5;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--hd-surface-2);
+  color: var(--hd-ink-2);
+  border: 1px solid var(--hd-line);
+  white-space: nowrap;
+}
+.hd.hd-app :where(.badge, .tag, .pill).ok, .hd.hd-app .badge-ok, .hd.hd-app .badge-approved, .hd.hd-app .badge-match, .hd.hd-app .badge-done, .hd.hd-app .status-ok {
+  background: var(--hd-ok-soft); color: var(--hd-ok); border-color: transparent;
+}
+.hd.hd-app :where(.badge, .tag, .pill).bad, .hd.hd-app .badge-bad, .hd.hd-app .badge-mismatch, .hd.hd-app .badge-late, .hd.hd-app .badge-error, .hd.hd-app .status-bad {
+  background: var(--hd-bad-soft); color: var(--hd-bad); border-color: transparent;
+}
+.hd.hd-app :where(.badge, .tag, .pill).warn, .hd.hd-app .badge-warn, .hd.hd-app .badge-wait, .hd.hd-app .badge-draft, .hd.hd-app .badge-late-soft, .hd.hd-app .status-warn {
+  background: var(--hd-warn-soft); color: var(--hd-warn); border-color: transparent;
+}
+.hd.hd-app :where(.badge, .tag, .pill).info, .hd.hd-app .badge-info, .hd.hd-app .badge-submitted, .hd.hd-app .badge-delete {
+  background: var(--hd-info-soft); color: var(--hd-info); border-color: transparent;
+}
+
+/* ---------------------------------------------------------------- 보조 --- */
+
+.hd.hd-app .muted, .hd.hd-app .hint, .hd.hd-app .sub, .hd.hd-app .subtitle, .hd.hd-app .note, .hd.hd-app .small, .hd.hd-app .desc {
+  color: var(--hd-ink-2);
+  font-size: 13px;
+}
+.hd.hd-app .small, .hd.hd-app .tiny { font-size: 12px; color: var(--hd-ink-3); }
+.hd.hd-app .hidden, .hd.hd-app [hidden] { display: none !important; }
+
+/* 안내 띠 */
+.hd.hd-app .notice, .hd.hd-app .callout, .hd.hd-app .alert, .hd.hd-app .banner {
+  border: 1px solid var(--hd-line);
+  border-left: 3px solid var(--accent);
+  background: var(--hd-surface-2);
+  border-radius: var(--hd-r-sm);
+  padding: 12px 15px;
+  font-size: 13.5px;
+}
+.hd.hd-app .notice.ok, .hd.hd-app .alert-ok { border-left-color: var(--hd-ok);   background: var(--hd-ok-soft); }
+.hd.hd-app .notice.warn, .hd.hd-app .alert-warn { border-left-color: var(--hd-warn); background: var(--hd-warn-soft); }
+.hd.hd-app .notice.bad, .hd.hd-app .alert-danger { border-left-color: var(--hd-bad);  background: var(--hd-bad-soft); }
+
+/* 푸터 */
+.hd.hd-app footer, .hd.hd-app .foot, .hd.hd-app .site-footer {
+  color: var(--hd-ink-3);
+  font-size: 13px;
+  border-top: 1px solid var(--hd-line);
+  margin-top: 44px;
+  padding: 22px 0 34px;
+  background: var(--hd-surface);
+}
+.hd.hd-app footer a, .hd.hd-app .foot a { color: var(--hd-ink-2); }
+
+/* 스크롤바 */
+* { scrollbar-width: thin; scrollbar-color: var(--hd-line) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: var(--hd-line); border-radius: 999px;
+  border: 3px solid transparent; background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--hd-ink-3); background-clip: content-box; }
+
+/* 인쇄 — screen 으로 한정하지 않으면 출력물의 다단이 접힌다 (§9.7) */
+@media print {
+  body.hd.hd-app { background: #fff; }
+  .hd.hd-app .topbar, .hd.hd-app .tab-bar, .hd.hd-app .tabs, .hd.hd-app .btn, .hd.hd-app .toolbar, .hd.hd-app footer { display: none !important; }
+  .hd.hd-app .card, .hd.hd-app .panel { border: 1px solid #ccc; box-shadow: none; break-inside: avoid; }
+}
+
+@media (max-width: 640px) {
+  body.hd.hd-app { font-size: 14.5px; }
+  .hd.hd-app .card, .hd.hd-app .panel { padding: 16px; border-radius: var(--hd-r); }
+  .hd.hd-app .page-head { padding: 18px 0 14px; }
+  .hd.hd-app .form-row, .hd.hd-app .field-row { flex-direction: column; align-items: stretch; }
+  .hd.hd-app .form-row label, .hd.hd-app .field-row label { width: 100%; }
+  .hd.hd-app input, .hd.hd-app select, .hd.hd-app textarea { width: 100%; }
+  .hd.hd-app .btn { padding: 10px 14px; }   /* 손가락으로 누를 크기 */
+}
+
+/* 움직임을 줄여 달라는 설정을 존중한다 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* ============================================================================
+ * 접근성 · 타이포 위계 · 영역 구분
+ * (2026-08-25 — 화면을 열어 보고 실제 대비를 재서 잡은 것들)
+ * ========================================================================== */
+
+/* ── 1. 색만으로 상태를 알리지 않는다 ───────────────────────────────────
+ * 성공(초록)과 실패(빨강)는 서로 대비가 1.24 밖에 안 된다.
+ * 적록색약에게는 사실상 같은 색이라, 색을 못 보면 상태를 알 수 없다.
+ * 그래서 **모양을 함께** 붙인다 — 색이 사라져도 ●▲■◆ 로 갈린다.
+ * 이미 아이콘·기호가 들어 있는 배지에는 붙이지 않는다(중복). */
+.hd.hd-app .badge::before,
+.hd.hd-app .tag::before,
+.hd.hd-app .pill::before {
+  font-size: .82em;
+  line-height: 1;
+  /* 기호는 장식이 아니라 정보다. 다만 스크린리더는 옆 글자를 이미 읽으므로
+     중복해 읽히지 않게 감춘다. */
+  speak: none;
+}
+.hd.hd-app .badge.ok::before, .hd.hd-app .pill.ok::before,
+.hd.hd-app .badge-ok::before, .hd.hd-app .badge-approved::before,
+.hd.hd-app .badge-match::before, .hd.hd-app .badge-done::before { content: "\25CF"; }   /* ● */
+
+.hd.hd-app .badge.bad::before, .hd.hd-app .pill.bad::before,
+.hd.hd-app .badge-bad::before, .hd.hd-app .badge-mismatch::before,
+.hd.hd-app .badge-late::before, .hd.hd-app .badge-error::before { content: "\25B2"; }   /* ▲ */
+
+.hd.hd-app .badge.warn::before, .hd.hd-app .pill.warn::before,
+.hd.hd-app .badge-warn::before, .hd.hd-app .badge-wait::before,
+.hd.hd-app .badge-draft::before, .hd.hd-app .badge-late-soft::before { content: "\25A0"; } /* ■ */
+
+.hd.hd-app .badge.info::before, .hd.hd-app .pill.info::before,
+.hd.hd-app .badge-info::before, .hd.hd-app .badge-submitted::before { content: "\25C6"; } /* ◆ */
+
+/* 표에서 행 전체를 색으로만 칠하던 것도 왼쪽에 굵기를 달리한 선을 더한다 */
+.hd.hd-app tr.is-ok  td:first-child { box-shadow: inset 3px 0 0 var(--hd-ok); }
+.hd.hd-app tr.is-bad td:first-child { box-shadow: inset 3px 0 0 var(--hd-bad); }
+
+/* 진행바·게이지도 색만으로 구분하지 않게 — 낮은 값에는 빗금을 준다 */
+.hd.hd-app .progress .low,
+.hd.hd-app .bar.low,
+.hd.hd-app .fill.low {
+  background-image: repeating-linear-gradient(
+    45deg, transparent, transparent 4px,
+    rgba(255,255,255,.28) 4px, rgba(255,255,255,.28) 8px);
+}
+
+/* ── 2. 굵기 위계 ──────────────────────────────────────────────────────
+ * 한글은 굵기가 과하면 획이 붙어 뭉갠다. 700 을 여기저기 쓰면
+ * 무엇이 더 중요한지가 사라진다. 단계를 벌려 둔다. */
+.hd.hd-app h1 { font-weight: 700; }
+.hd.hd-app h2 { font-weight: 700; }
+.hd.hd-app h3 { font-weight: 650; }
+.hd.hd-app h4 { font-weight: 650; }
+.hd.hd-app table th,
+.hd.hd-app .table th,
+.hd.hd-app .tbl th { font-weight: 650; }
+.hd.hd-app .badge, .hd.hd-app .tag, .hd.hd-app .pill, .hd.hd-app .chip { font-weight: 650; }
+.hd.hd-app .btn { font-weight: 600; }
+.hd.hd-app label { font-weight: 600; }
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .stat-value,
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .v,
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .value { font-weight: 700; }
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .stat-label,
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .k,
+.hd.hd-app :where(.stat, .stat-card, .kpi, .kpi-card) .label { font-weight: 600; }
+.hd.hd-app b, .hd.hd-app strong { font-weight: 650; }
+
+/* 보조 텍스트는 굵기가 아니라 색으로 낮춘다. 얇게 만들면 한글이 흐려진다. */
+.hd.hd-app .muted, .hd.hd-app .hint, .hd.hd-app .sub,
+.hd.hd-app .subtitle, .hd.hd-app .note, .hd.hd-app .desc { font-weight: 400; }
+
+/* ── 3. 영역 구분 ──────────────────────────────────────────────────────
+ * 카드가 다 같은 흰 면이라 어디까지가 한 덩어리인지 흐렸다.
+ * 제목 아래 선 하나와 섹션 사이 간격으로 가른다. */
+.hd.hd-app .card > h2,
+.hd.hd-app .panel > h2 {
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--hd-line);
+}
+.hd.hd-app .card > h3,
+.hd.hd-app .panel > h3 { margin-bottom: 14px; }
+
+/* 섹션끼리는 카드끼리보다 더 벌린다 — 층이 보여야 한다 */
+.hd.hd-app section + section { margin-top: 34px; }
+.hd.hd-app .card + .card,
+.hd.hd-app .panel + .panel { margin-top: 18px; }
+
+/* 표 머리와 본문 사이는 확실히 끊는다 */
+.hd.hd-app table th,
+.hd.hd-app .table th,
+.hd.hd-app .tbl th { border-bottom: 2px solid var(--hd-line); }
+
+/* 줄이 많은 표는 홀짝을 아주 옅게 갈라 눈이 줄을 잃지 않게 한다.
+   색약과 무관하게 밝기 차이만 쓴다. */
+.hd.hd-app table tbody tr:nth-child(even) td,
+.hd.hd-app .table tbody tr:nth-child(even) td,
+.hd.hd-app .tbl tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--hd-surface-2) 55%, transparent); }
+.hd.hd-app table tbody tr:hover td,
+.hd.hd-app .table tbody tr:hover td,
+.hd.hd-app .tbl tbody tr:hover td { background: var(--accent-soft); }
+
+/* ── 4. 초점 표시 — 키보드로 쓰는 사람에게 지금 어디인지 보이게 ────────── */
+.hd.hd-app a:focus-visible,
+.hd.hd-app button:focus-visible,
+.hd.hd-app [tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── 5. 대비를 더 달라고 설정한 사람에게는 더 준다 ──────────────────────── */
+@media (prefers-contrast: more) {
+  .hd.hd-app {
+    --hd-line: #94a3b8;
+    --hd-ink-2: #1e293b;
+    --hd-ink-3: #475569;
+  }
+  .hd.hd-app .card, .hd.hd-app .panel { border-width: 2px; }
+  .hd.hd-app .badge, .hd.hd-app .tag, .hd.hd-app .pill { border: 1px solid currentColor; }
+}
+
+/* ── 어두운 헤더 안에 놓인 카드·지표 ─────────────────────────────────────
+ * 헤더는 짙은 배경이다. 거기 놓인 상자에 흰 면을 칠하면,
+ * 그 안 글자는 헤더를 따라 흰색으로 남아 **흰 바탕에 흰 글자**가 된다.
+ * 실제로 hd-04 히어로의 통계 상자 네 개가 통째로 비어 보였다.
+ * 헤더 안에서는 반투명 면을 쓰고 글자는 밝게 둔다. */
+body.hd.hd-app > header .stat,
+body.hd.hd-app > header .stat-card,
+body.hd.hd-app > header .kpi,
+body.hd.hd-app > header .kpi-card,
+body.hd.hd-app > header .card,
+body.hd.hd-app > header .panel,
+body.hd.hd-app > header .box {
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .24);
+  box-shadow: none;
+  color: #fff;
+}
+/* 왼쪽 강조 막대는 짙은 배경에서 잘 안 보이고 면만 지저분해진다 */
+body.hd.hd-app > header .stat::after,
+body.hd.hd-app > header .stat-card::after,
+body.hd.hd-app > header .kpi::after,
+body.hd.hd-app > header .kpi-card::after { display: none; }
+
+body.hd.hd-app > header .stat b,
+body.hd.hd-app > header .stat strong,
+body.hd.hd-app > header .stat .v,
+body.hd.hd-app > header .stat .value,
+body.hd.hd-app > header .stat-card .stat-value { color: #fff; }
+
+body.hd.hd-app > header .stat span,
+body.hd.hd-app > header .stat .k,
+body.hd.hd-app > header .stat .label,
+body.hd.hd-app > header .stat-card .stat-label { color: rgba(255, 255, 255, .82); }
+
+body.hd.hd-app > header .stat:hover,
+body.hd.hd-app > header .stat-card:hover,
+body.hd.hd-app > header .kpi:hover {
+  border-color: rgba(255, 255, 255, .45);
+  background: rgba(255, 255, 255, .18);
+}
+
+/* ============================================================================
+ * 세로 리듬 — 마진·패딩·줄간격
+ * (2026-08-25 — 실제 계산값을 재서 잡았다)
+ *
+ * 재 보니 소제목의 위쪽 마진이 **0** 이었다. 테마의 `:where(h2)` 가
+ * `margin: 0 0 .5em` 을 주는데 특정도가 높아, 페이지가 따로 준 `margin-top` 을
+ * 눌러 버리고 있었다. 그래서 섹션이 앞 내용에 딱 붙어 층이 보이지 않았다.
+ * 아래 규칙은 `:where()` 를 쓰지 않아 그 문제가 다시 생기지 않는다.
+ * ========================================================================== */
+
+/* ── 문단 ─────────────────────────────────────────────────────────────── */
+.hd.hd-app p {
+  margin: 0 0 var(--sp-2);
+  line-height: var(--lh-body);
+}
+/* 문단이 이어질 때는 조금 더 붙여 한 덩어리로 읽히게 한다 */
+.hd.hd-app p + p { margin-top: calc(var(--sp-2) * -0.25); }
+
+/* ── 제목 ─────────────────────────────────────────────────────────────── */
+.hd.hd-app h1,
+.hd.hd-app h2,
+.hd.hd-app h3,
+.hd.hd-app h4 { line-height: var(--lh-tight); }
+
+/* 위가 넓고 아래가 좁아야 제목이 **아래 내용에 붙어** 한 덩어리로 보인다.
+   반대로 두면 제목이 앞 단락에 붙어 어디부터가 새 이야기인지 흐려진다. */
+.hd.hd-app h2 { margin: var(--sp-4) 0 var(--sp-2); }
+.hd.hd-app h3 { margin: var(--sp-3) 0 var(--sp-1); }
+.hd.hd-app h4 { margin: var(--sp-3) 0 var(--sp-1); }
+
+/* 컨테이너의 첫 요소는 위 마진을 없앤다 — 안 그러면 카드 위쪽이 텅 빈다 */
+.hd.hd-app .card > :first-child,
+.hd.hd-app .panel > :first-child,
+.hd.hd-app section > :first-child,
+.hd.hd-app main > :first-child,
+.hd.hd-app .guide > :first-child { margin-top: 0; }
+.hd.hd-app .card > :last-child,
+.hd.hd-app .panel > :last-child,
+.hd.hd-app .guide > :last-child { margin-bottom: 0; }
+
+/* ── 목록 ─────────────────────────────────────────────────────────────── */
+.hd.hd-app ul,
+.hd.hd-app ol {
+  margin: 0 0 var(--sp-2);
+  padding-left: 22px;
+  line-height: var(--lh-body);
+}
+/* 항목 사이를 벌린다. 붙어 있으면 여러 줄짜리 항목에서 어디가 한 항목인지 안 보인다. */
+.hd.hd-app li { margin-bottom: var(--sp-1); }
+.hd.hd-app li:last-child { margin-bottom: 0; }
+.hd.hd-app li > ul,
+.hd.hd-app li > ol { margin-top: var(--sp-1); margin-bottom: 0; }
+/* 목록 다음에 오는 문단은 한 칸 띄운다 */
+.hd.hd-app ul + p,
+.hd.hd-app ol + p { margin-top: var(--sp-2); }
+
+/* ── 표·코드·안내 띠 ──────────────────────────────────────────────────── */
+.hd.hd-app .table-wrap,
+.hd.hd-app .tablewrap,
+.hd.hd-app table,
+.hd.hd-app pre,
+.hd.hd-app .notice,
+.hd.hd-app .callout,
+.hd.hd-app .alert,
+.hd.hd-app .warn,
+.hd.hd-app .tip { margin: var(--sp-3) 0; }
+
+/* 표 안 글자는 촘촘해도 읽힌다 — 줄이 짧고 세로로 훑기 때문이다 */
+.hd.hd-app table td,
+.hd.hd-app .table td,
+.hd.hd-app .tbl td { line-height: 1.65; }
+
+/* 표 바로 앞 설명은 표에 붙여 둘이 한 덩어리로 보이게 */
+.hd.hd-app p + .table-wrap,
+.hd.hd-app p + .tablewrap,
+.hd.hd-app p + table { margin-top: var(--sp-1); }
+
+/* ── 큰 단락 ──────────────────────────────────────────────────────────── */
+.hd.hd-app section + section { margin-top: var(--sp-5); }
+.hd.hd-app .card + .card,
+.hd.hd-app .panel + .panel { margin-top: var(--sp-3); }
+
+/* ── 버튼 줄 ──────────────────────────────────────────────────────────── */
+.hd.hd-app .links,
+.hd.hd-app .btn-group,
+.hd.hd-app .actions { margin: var(--sp-3) 0 0; }
+
+/* ── 카드 안쪽 여백 ───────────────────────────────────────────────────── */
+.hd.hd-app .card,
+.hd.hd-app .panel { padding: 22px 24px; }
+@media (max-width: 640px) {
+  .hd.hd-app .card,
+  .hd.hd-app .panel { padding: 18px; }
+  .hd.hd-app h2 { margin-top: var(--sp-3); }
+  .hd.hd-app section + section { margin-top: var(--sp-4); }
+}
+
+/* ── 본문 폭 ──────────────────────────────────────────────────────────── */
+/* 한 줄이 너무 길면 눈이 다음 줄 첫 글자를 찾지 못한다.
+   산문은 860px 정도가 편하다(§9.1 장문 틀). */
+.hd.hd-app .guide,
+.hd.hd-app .prose { max-width: var(--container-prose); }
+.hd.hd-app .guide p,
+.hd.hd-app .prose p { line-height: 1.85; }   /* 읽기 전용 페이지는 조금 더 넉넉히 */
+/* ── 격자 안의 카드는 형제 여백을 쓰지 않는다 ──────────────────────────
+   위쪽 `.card + .card { margin-top: var(--sp-3) }` 는 카드를 **세로로 쌓을 때**
+   쓰라고 만든 것이다. 그런데 선택자가 부모를 가리지 않아 **격자 안에서도** 걸린다.
+
+   격자에서 이게 무슨 일을 하냐면 —
+     첫 칸은 여백이 없어 칸 높이를 꽉 채우고, 둘째부터는 22px 씩 밀려난다.
+     결과: **같은 줄인데 박스 위끝이 서로 안 맞고 세로 크기도 달라진다.**
+     (바닥은 같아서 언뜻 보면 이유를 못 찾는다)
+   간격은 이미 격자의 `gap` 이 주므로 여기서는 지우는 것이 맞다.
+
+   ⚠ 부모가 격자인지 CSS 로 직접 물을 수 없어 **이름으로 고른다.**
+      아래 목록은 12개 사이트를 실제로 재서 나온 것이다 —
+        cards(hd-04) · charts(01) · grid-2(05) · compare-layout(06)
+        · grid/span-5(09) · grid2(11)
+      새 격자를 만들면 이 목록에 걸리는 이름을 쓰거나, 여기에 추가할 것. */
+.hd.hd-app [class*="grid"]   > .card  + .card,
+.hd.hd-app [class*="grid"]   > .panel + .panel,
+.hd.hd-app [class*="cards"]  > .card  + .card,
+.hd.hd-app [class*="cards"]  > .panel + .panel,
+.hd.hd-app [class*="chart"]  > .card  + .card,
+.hd.hd-app [class*="chart"]  > .panel + .panel,
+.hd.hd-app [class*="layout"] > .card  + .card,
+.hd.hd-app [class*="layout"] > .panel + .panel,
+.hd.hd-app [class*="span-"]  > .card  + .card,
+.hd.hd-app [class*="span-"]  > .panel + .panel { margin-top: 0; }
